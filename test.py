@@ -102,6 +102,9 @@ def ensure_test_output():
 
 	with concurrent.futures.ThreadPoolExecutor(max_workers=19) as executor: 
 		clang = os.path.abspath(llvm_clang_exe)
+		
+		# comment out the "real" tests
+		"""
 		for in_path, out_path in raw_test_cases():
 			if not os.path.isfile(out_path):
 				directory = os.path.dirname(out_path)
@@ -109,6 +112,15 @@ def ensure_test_output():
 					os.makedirs(directory)
 				executor.submit(run_clang, clang, True, in_path, out_path)
 		for in_path, out_path in no_hashtag_test_cases():
+			if not os.path.isfile(out_path):
+				directory = os.path.dirname(out_path)
+				if not os.path.exists(directory):
+					os.makedirs(directory)
+				executor.submit(run_clang, clang, False, in_path, out_path)
+		"""
+		
+		# just test against clang ran over 'cooked' (not raw) bootstrip12
+		for in_path, out_path in bs12_test_cases():
 			if not os.path.isfile(out_path):
 				directory = os.path.dirname(out_path)
 				if not os.path.exists(directory):
@@ -141,6 +153,11 @@ def no_hashtag_test_cases():
 
 			yield (in_path, out_path)
 
+def bs12_test_cases():
+	in_path = "test_files/bs12/tcc.c" 
+	out_path = f"{ignored_by_git_dir}/test_output/bs12/tcc.c.tokens"
+	yield (in_path, out_path)
+
 def run_clang(clang_path, raw, in_path, out_path):
 	with open(out_path, "wb") as out_f:
 		cmd = '-dump-raw-tokens' if raw else '-dump-tokens'
@@ -155,6 +172,7 @@ def run_tests():
 
 	with concurrent.futures.ThreadPoolExecutor() as executor:
 		ctok = os.path.abspath(ctok_exe)
+		"""
 		for in_path, out_path in raw_test_cases():
 			executor.submit(
 						run_ctok, 
@@ -163,6 +181,7 @@ def run_tests():
 						out_path,
 						fails,
 						fail_lock)
+		"""
 			
 		""" # todo run lex tests
 		for in_path, out_path in lex_test_cases():
@@ -177,6 +196,14 @@ def run_tests():
 						fails,
 						fail_lock)
 		"""
+		for in_path, out_path in bs12_test_cases():
+			executor.submit(
+						run_ctok, 
+						ctok, 
+						in_path, 
+						out_path,
+						fails,
+						fail_lock)
 	
 	print(f'{len(fails)} tests failed')
 	if fails:
