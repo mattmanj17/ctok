@@ -1724,6 +1724,15 @@ void Print_token(
 	size_t line,
 	size_t col)
 {
+	// Skip some tokens
+
+	switch (tokk)
+	{
+	case Tokk_whitespace:
+	case Tokk_comment:
+		return;
+	}
+
 	// Token Kind
 
 	printf("%s", Str_from_tokk(tokk));
@@ -1797,7 +1806,7 @@ void Advance_line_info(
 	}
 }
 
-void Print_raw_tokens(Byte_span_t span)
+void Print_tokens(Byte_span_t span)
 {
 	// Decode + scrub
 
@@ -1952,5 +1961,5 @@ int wmain(int argc, wchar_t *argv[])
 	span.begin = file_bytes;
 	span.end = file_bytes + file_length;
 
-	Print_raw_tokens(span);
+	Print_tokens(span);
 }
