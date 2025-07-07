@@ -461,6 +461,7 @@ void Scrub_escaped_line_breaks(
 
 #define TOKEN_KINDS()\
 	X(unknown)\
+	X(whitespace)\
 	X(eof)\
 	X(eod)\
 	X(code_completion)\
@@ -1614,7 +1615,7 @@ Tokk_end_t Lex_leading_token(Ch_loc_t * it)
 	else if (Is_ws(ch_0) || ch_0 == '\0')
 	{
 		++it;
-		return Make_tokk_end(Tokk_unknown, After_whitespace(it));
+		return Make_tokk_end(Tokk_whitespace, After_whitespace(it));
 	}
 	else if (ch_0 == '\\')
 	{
