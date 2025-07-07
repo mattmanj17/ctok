@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <uchar.h>
 
 
@@ -1735,7 +1736,53 @@ void Print_token(
 
 	// Token Kind
 
-	printf("%s", Str_from_tokk(tokk));
+	const char * str_tokk = Str_from_tokk(tokk);
+	if (tokk == Tokk_raw_identifier)
+	{
+		// assume generic id by default
+		str_tokk = "identifier";
+
+		// ... but check for keyword tokens
+		for (
+			Tokk_t tokk_kw = Tokk_kw_auto; 
+			tokk_kw <= Tokk_kw___unknown_anytype; 
+			tokk_kw = (Tokk_t)(((size_t)tokk_kw) + 1)
+		)
+		{
+			const char * str_kw = Str_from_tokk(tokk_kw);
+			size_t len_kw = strlen(str_kw);
+			
+			// Skip "kw_"
+			len_kw -= 3;
+			str_kw += 3;
+
+			// blek, match clang __attribute vs __attribute__ gunk
+			if (tokk_kw == Tokk_kw___attribute)
+			{
+				str_kw = "__attribute__";
+				len_kw = strlen(str_kw);
+			}
+
+			size_t len_tok = (size_t)(loc_end - loc_begin);
+			if (len_tok != len_kw)
+				continue;
+
+			if (strncmp((const char *)loc_begin, str_kw, len_kw) == 0)
+			{
+				str_tokk = str_kw;
+
+				// blek __attribute vs __attribute__ gunk
+				if (tokk_kw == Tokk_kw___attribute)
+				{
+					str_tokk = "__attribute";
+				}
+
+				break;
+			}
+		}
+	}
+
+	printf("%s", str_tokk);
 
 	// Token text
 
