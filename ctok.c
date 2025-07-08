@@ -1727,12 +1727,12 @@ void Print_token(
 {
 	// Skip some tokens
 
-	switch (tokk)
-	{
-	case Tokk_whitespace:
-	case Tokk_comment:
-		return;
-	}
+	//switch (tokk)
+	//{
+	//case Tokk_whitespace:
+	//case Tokk_comment:
+	//	return;
+	//}
 
 	// Token Kind
 
