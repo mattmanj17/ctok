@@ -1,8 +1,6 @@
-# fool
+# ctok
 
 Just some c code, that tokenizes c code
-
-- Although I see this repo becoming somthing of a 'home base' for my generic code fiddling
 
 ## For those who care
 
